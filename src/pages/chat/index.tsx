@@ -1,23 +1,30 @@
-const ChatPage = (): JSX.Element => (
-  <main className="min-h-screen bg-background text-foreground">
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-16">
-      <header className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+const ChatPage = () => (
+  <section className="flex flex-col gap-8">
+    <header className="space-y-4">
+      <div className="space-y-1">
+        <p className="text-text-muted text-xs font-semibold uppercase tracking-[0.2em]">
           Chat workspace
         </p>
-        <h1 className="text-3xl font-semibold">AI Assistant Console</h1>
-        <p className="text-base text-muted-foreground">
-          Feature modules will be wired here once chat and document flows are implemented.
-        </p>
-      </header>
+        <h1 className="text-display-sm text-text-primary font-semibold">AI Assistant Console</h1>
+      </div>
+      <p className="text-text-secondary max-w-2xl text-base">
+        Conversational flows, streaming responses, and document-aware context builders will mount
+        here. The current view focuses on design tokens, spacing rhythm, and theming foundations.
+      </p>
+    </header>
 
-      <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
-        <p className="text-muted-foreground">
-          The UI is intentionally left minimal until feature components are introduced.
-        </p>
-      </section>
-    </div>
-  </main>
+    <article className="surface-panel flex flex-col gap-4">
+      <div>
+        <p className="text-text-secondary text-sm font-semibold">Status</p>
+        <p className="text-text-primary text-2xl font-semibold">Foundations ready</p>
+      </div>
+      <p className="text-text-muted text-sm">
+        Chat modules, agent routing, and document orchestration hooks will connect into this surface
+        once business logic is introduced. Until then, the shell ensures typography, elevation, and
+        motion tokens remain consistent across feature boundaries.
+      </p>
+    </article>
+  </section>
 )
 
 export default ChatPage

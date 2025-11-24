@@ -1,6 +1,8 @@
 import type { Config } from 'tailwindcss'
 import tailwindcssAnimate from 'tailwindcss-animate'
 
+const withOpacity = (variableName: string): string => `rgb(var(${variableName}) / <alpha-value>)`
+
 const config: Config = {
   content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
   theme: {
@@ -11,39 +13,63 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
+        background: withOpacity('--background'),
+        surface: withOpacity('--surface'),
+        'surface-hover': withOpacity('--surface-hover'),
+        card: withOpacity('--card'),
+        border: withOpacity('--border'),
+        ring: withOpacity('--focus-ring'),
+        input: withOpacity('--input-bg'),
+        bubble: withOpacity('--bubble-bg'),
+        disabled: withOpacity('--button-disabled'),
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: withOpacity('--accent'),
+          foreground: withOpacity('--text-on-accent'),
+          hover: withOpacity('--accent-hover'),
         },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+        primary: {
+          DEFAULT: withOpacity('--gunadarma-primary'),
+          dark: withOpacity('--gunadarma-primary-dark'),
+          light: withOpacity('--gunadarma-primary-light'),
+          hover: withOpacity('--gunadarma-primary-hover'),
+          foreground: withOpacity('--text-on-primary'),
         },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+        text: {
+          primary: withOpacity('--text-primary'),
+          secondary: withOpacity('--text-secondary'),
+          muted: withOpacity('--text-muted'),
         },
+        focus: withOpacity('--focus-ring'),
+        error: withOpacity('--error'),
+        success: withOpacity('--success'),
+      },
+      fontFamily: {
+        sans: ['Inter', 'SF Pro Display', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Menlo', 'monospace'],
+      },
+      fontSize: {
+        xs: ['var(--font-size-xs)', '1.4'],
+        sm: ['var(--font-size-sm)', '1.45'],
+        base: ['var(--font-size-base)', '1.6'],
+        lg: ['var(--font-size-lg)', '1.6'],
+        xl: ['var(--font-size-xl)', '1.3'],
+        '2xl': ['var(--font-size-2xl)', '1.2'],
+        'display-sm': ['var(--font-size-display-sm)', '1.15'],
+        'display-lg': ['var(--font-size-display-lg)', '1.05'],
+      },
+      spacing: {
+        'layout-xs': 'var(--space-2)',
+        'layout-sm': 'var(--space-3)',
+        'layout-md': 'var(--space-4)',
+        'layout-lg': 'var(--space-6)',
+        'layout-xl': 'var(--space-8)',
+        'layout-2xl': 'var(--space-10)',
+      },
+      boxShadow: {
+        'elevation-0': 'var(--elevation-0)',
+        'elevation-1': 'var(--elevation-1)',
+        'elevation-2': 'var(--elevation-2)',
+        'elevation-3': 'var(--elevation-3)',
       },
       keyframes: {
         'accordion-down': {
