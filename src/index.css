@@ -166,3 +166,32 @@
     box-shadow: var(--elevation-2);
   }
 }
+
+@keyframes typing-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@layer components {
+  .typing-dot {
+    @apply shadow-elevation-0 h-2 w-2 rounded-full bg-primary;
+    animation: typing-pulse 1s infinite ease-in-out;
+  }
+
+  .typing-delay-150 {
+    animation-delay: 150ms;
+  }
+
+  .typing-delay-300 {
+    animation-delay: 300ms;
+  }
+}

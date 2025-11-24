@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { askQuestion, ChatApiError } from '@/features/chat/services/chatApi'
 import type { ApiErrorDetail, AskRequest, ChatMessage } from '@/features/chat/types'
 
@@ -15,11 +15,25 @@ interface SendMessageOptions {
   use_hybrid?: boolean
 }
 
-const useChat = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
+interface UseChatOptions {
+  initialMessages?: ChatMessage[]
+  onMessagesChange?: (messages: ChatMessage[]) => void
+}
+
+const useChat = ({ initialMessages = [], onMessagesChange }: UseChatOptions = {}) => {
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages)
   const [isLoading, setIsLoading] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const [error, setError] = useState<ApiErrorDetail | null>(null)
+
+  useEffect(() => {
+    setMessages(initialMessages)
+    setError(null)
+  }, [initialMessages])
+
+  useEffect(() => {
+    onMessagesChange?.(messages)
+  }, [messages, onMessagesChange])
 
   const sendMessage = useCallback(async (content: string, options?: SendMessageOptions) => {
     const trimmed = content.trim()
@@ -78,6 +92,10 @@ const useChat = () => {
     setError(null)
   }, [])
 
+  const dismissError = useCallback(() => {
+    setError(null)
+  }, [])
+
   const stateSummary = useMemo(
     () => ({
       lastMessage: messages[messages.length - 1] ?? null,
@@ -94,8 +112,9 @@ const useChat = () => {
     sendMessage,
     resetConversation,
     stateSummary,
+    dismissError,
   }
 }
 
-export type { SendMessageOptions }
+export type { SendMessageOptions, UseChatOptions }
 export { useChat }
