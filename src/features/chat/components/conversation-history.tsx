@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { clsx } from 'clsx'
 import { Check, MessageSquare, PencilLine, Plus, Trash2 } from 'lucide-react'
 import type { Conversation } from '@/features/chat/types'
@@ -25,6 +25,15 @@ const ConversationHistory = ({
 }: ConversationHistoryProps) => {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [draftTitle, setDraftTitle] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredConversations = useMemo(() => {
+    const term = searchQuery.trim().toLowerCase()
+    if (!term) {
+      return conversations
+    }
+    return conversations.filter((conversation) => conversation.title.toLowerCase().includes(term))
+  }, [conversations, searchQuery])
 
   const beginEditing = (conversationId: string, currentTitle: string) => {
     setEditingId(conversationId)
@@ -52,13 +61,33 @@ const ConversationHistory = ({
         </Button>
       </div>
 
+      <div>
+        <label className="sr-only" htmlFor="conversation-search">
+          Cari riwayat percakapan
+        </label>
+        <div className="bg-surface-hover/60 focus-within:border-primary/30 border-border mb-3 flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm transition">
+          <input
+            id="conversation-search"
+            type="search"
+            value={searchQuery}
+            onChange={(event) => {
+              setSearchQuery(event.target.value)
+            }}
+            placeholder="Cari riwayat…"
+            className="bg-transparent flex-1 text-sm text-text-primary placeholder:text-text-muted focus:outline-none"
+          />
+        </div>
+      </div>
+
       <div className="-mx-2 flex-1 space-y-1 overflow-y-auto pr-1">
-        {conversations.length === 0 && (
+        {filteredConversations.length === 0 && (
           <div className="text-text-muted text-sm">
-            Riwayat kosong. Mulai percakapan baru untuk menyimpannya di sini.
+            {conversations.length === 0
+              ? 'Riwayat kosong. Mulai percakapan baru untuk menyimpannya di sini.'
+              : 'Tidak ada percakapan yang cocok dengan pencarian.'}
           </div>
         )}
-        {conversations.map((conversation) => {
+        {filteredConversations.map((conversation) => {
           const isActive = conversation.id === activeConversationId
           const isEditing = editingId === conversation.id
 

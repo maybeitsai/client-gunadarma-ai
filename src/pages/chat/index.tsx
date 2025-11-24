@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Info } from 'lucide-react'
 import { useChat } from '@/features/chat/hooks/useChat'
 import { useConversations } from '@/features/chat/hooks/useConversations'
 import { ChatMessage as ChatMessageItem } from '@/features/chat/components/chat-message'
@@ -124,20 +123,24 @@ const ChatPage = () => {
       />
 
       <div className="surface-panel flex min-h-[70vh] flex-col gap-6">
-        <header className="flex flex-col gap-2 border-b border-border/60 pb-4">
-          <p className="text-text-muted text-xs uppercase tracking-[0.3em]">Gunadarma AI</p>
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-display-sm text-text-primary leading-tight">
-                Asisten Interaktif
-              </h1>
-              <p className="text-text-secondary mt-1 text-sm">
-                Jawaban kontekstual dengan referensi sumber resmi kampus.
-              </p>
-            </div>
-            <div className="text-text-secondary flex items-center gap-2 text-xs">
-              <Info className="h-4 w-4" />
-              Percakapan tersimpan secara lokal di perangkat Anda.
+        <header className="flex flex-col gap-3 border-b border-border/60 pb-4">
+          <p className="text-text-muted text-xs uppercase tracking-[0.3em] text-center lg:text-left">
+            Gunadarma AI
+          </p>
+          <div className="flex flex-col items-center gap-3 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
+            <div className="flex items-center gap-3">
+              <img
+                src="/favicon.png"
+                alt="Logo Universitas Gunadarma"
+                className="h-12 w-12 rounded-full shadow-elevation-1"
+                loading="lazy"
+              />
+              <div>
+                <h1 className="text-display-sm text-text-primary leading-tight">Asisten Interaktif</h1>
+                <p className="text-text-secondary mt-1 text-sm">
+                  Jawaban kontekstual dengan referensi sumber resmi kampus.
+                </p>
+              </div>
             </div>
           </div>
         </header>

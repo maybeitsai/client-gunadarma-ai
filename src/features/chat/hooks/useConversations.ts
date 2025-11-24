@@ -47,6 +47,21 @@ const generateId = (): string => {
   return `${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`
 }
 
+const deriveConversationTitle = (messages: ChatMessage[]): string | null => {
+  const firstUserMessage = messages.find((message) => message.role === 'user')
+  if (!firstUserMessage) {
+    return null
+  }
+
+  const trimmed = firstUserMessage.content.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  const snippet = trimmed.slice(0, 32).trimEnd()
+  return snippet.length > 0 ? snippet : null
+}
+
 const useConversations = () => {
   const [conversations, setConversations] = useState<Conversation[]>(() =>
     getInitialConversations(),
@@ -83,15 +98,26 @@ const useConversations = () => {
 
   const updateConversationMessages = useCallback((id: string, messages: ChatMessage[]) => {
     setConversations((prev) =>
-      prev.map((conversation) =>
-        conversation.id === id
-          ? {
-              ...conversation,
-              messages,
-              updatedAt: new Date().toISOString(),
-            }
-          : conversation,
-      ),
+      prev.map((conversation) => {
+        if (conversation.id !== id) {
+          return conversation
+        }
+
+        let nextTitle = conversation.title
+        if (conversation.messages.length === 0) {
+          const derivedTitle = deriveConversationTitle(messages)
+          if (derivedTitle) {
+            nextTitle = derivedTitle
+          }
+        }
+
+        return {
+          ...conversation,
+          title: nextTitle,
+          messages,
+          updatedAt: new Date().toISOString(),
+        }
+      }),
     )
   }, [])
 

@@ -27,12 +27,16 @@ const mdComponents: Components = {
     <ol className="text-text-primary list-decimal space-y-2 pl-6 text-sm">{children}</ol>
   ),
   li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-  code: ({ inline, children }) =>
-    inline ? (
-      <code className="bg-surface rounded-md px-1.5 py-px text-xs text-primary">{children}</code>
-    ) : (
-      <code className="bg-surface text-text-primary block rounded-xl p-4 text-xs">{children}</code>
-    ),
+  code: (props) => {
+    const isInline = 'inline' in props && Boolean((props as { inline?: boolean }).inline)
+    const { children } = props
+
+    if (isInline) {
+      return <code className="rounded-md bg-surface px-1.5 py-px text-xs text-primary">{children}</code>
+    }
+
+    return <code className="block rounded-xl bg-surface p-4 text-xs text-text-primary">{children}</code>
+  },
   pre: ({ children, ...props }) => (
     <pre
       {...(props as ComponentPropsWithoutRef<'pre'>)}
@@ -54,13 +58,11 @@ interface MarkdownRendererProps {
 }
 
 const MarkdownRenderer = ({ content }: MarkdownRendererProps) => (
-  <ReactMarkdown
-    className="space-y-4 text-sm leading-relaxed"
-    remarkPlugins={[remarkGfm]}
-    components={mdComponents}
-  >
-    {content}
-  </ReactMarkdown>
+  <div className="space-y-4 text-sm leading-relaxed">
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+      {content}
+    </ReactMarkdown>
+  </div>
 )
 
 export { MarkdownRenderer }
