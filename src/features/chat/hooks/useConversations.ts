@@ -70,10 +70,7 @@ const useConversations = () => {
   const [conversations, setConversations] = useState<Conversation[]>(() =>
     getInitialConversations(),
   )
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(() => {
-    const initial = getInitialConversations()
-    return initial[0]?.id ?? null
-  })
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
 
   useEffect(() => {
     persistConversations(conversations)

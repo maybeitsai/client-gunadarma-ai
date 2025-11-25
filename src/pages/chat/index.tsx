@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Menu, X, Info, PenSquare, Search } from 'lucide-react'
 import { useChat } from '@/features/chat/hooks/useChat'
 import { useConversations } from '@/features/chat/hooks/useConversations'
@@ -10,43 +10,12 @@ import type { ChatMessage } from '@/features/chat/types'
 import { Button } from '@/shared/ui/button'
 import ThemeSwitcher from '@/shared/ui/theme-switcher'
 
-const suggestedQuestions = [
-  'Cara mendaftar kuliah',
-  'Program magang/PKL',
-  'Perpustakaan dan laboratorium',
-  'Kontak dan alamat',
-]
-
-const ChatHeader = memo(() => (
-  <header className="flex flex-col gap-3 border-b border-border/60 pb-4">
-    <p className="text-center text-xs uppercase tracking-[0.3em] text-text-muted lg:text-left">
-      Gunadarma AI
-    </p>
-    <div className="flex flex-col items-center gap-3 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
-      <div className="flex items-center gap-3">
-        <img
-          src="/favicon.png"
-          alt="Logo Universitas Gunadarma"
-          className="h-12 w-12 rounded-full shadow-elevation-1"
-          loading="lazy"
-        />
-        <div>
-          <h1 className="text-display-sm leading-tight text-text-primary">Asisten Interaktif</h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            Jawaban kontekstual dengan referensi sumber resmi kampus.
-          </p>
-        </div>
-      </div>
-    </div>
-  </header>
-))
-
 const ChatPage = () => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const isNearBottomRef = useRef(true)
   const previousConversationIdRef = useRef<string | null>(null)
   const [inputValue, setInputValue] = useState('')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
 
   const {
@@ -157,8 +126,6 @@ const ChatPage = () => {
     node.scrollTo({ top: node.scrollHeight })
   }, [activeConversationId, messages.length])
 
-  const showSuggestions = useMemo(() => messages.length === 0, [messages.length])
-
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value)
   }, [])
@@ -192,13 +159,6 @@ const ChatPage = () => {
   const handleSubmit = useCallback(() => {
     submitMessage()
   }, [submitMessage])
-
-  const handleSuggestionClick = useCallback(
-    (question: string) => {
-      submitMessage(question)
-    },
-    [submitMessage],
-  )
 
   const handleNewConversation = useCallback(() => {
     resetConversation()
@@ -252,78 +212,80 @@ const ChatPage = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex-col border-r border-border bg-surface transition-all duration-300 ease-in-out lg:relative ${
-          isSidebarOpen
-            ? 'flex w-64 translate-x-0 opacity-100'
-            : 'flex w-16 -translate-x-full opacity-0 lg:translate-x-0 lg:opacity-100'
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-surface transition-all duration-300 ease-in-out lg:relative ${
+          isSidebarOpen ? 'w-64 translate-x-0' : 'w-16 -translate-x-full lg:translate-x-0'
         }`}
       >
-        <div
-          className={`h-full transition-opacity duration-200 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'}`}
-        >
-          {isSidebarOpen ? (
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-border p-4">
-                <h2 className="text-sm font-semibold text-text-primary">Riwayat Percakapan</h2>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsSidebarOpen(false)
-                  }}
-                  className="rounded-lg p-1.5 text-text-secondary hover:bg-surface-hover hover:text-text-primary"
-                  aria-label="Close sidebar"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+        {isSidebarOpen ? (
+          <div className="flex h-full flex-col">
+            <div className="flex items-center gap-3 px-4 py-3">
+              <img
+                src="/favicon.png"
+                alt="Logo Universitas Gunadarma"
+                className="h-6 w-6 rounded-full"
+              />
+              <div className="min-w-0 flex-1">
+                <h2 className="text-xs font-semibold text-text-primary">Gunadarma AI</h2>
+                <p className="text-[10px] leading-tight text-text-secondary">Smart AI Assistant</p>
               </div>
-              <div className="flex-1 overflow-hidden">
-                <ConversationHistory
-                  conversations={conversations}
-                  activeConversationId={activeConversationId}
-                  onSelect={handleSelectConversation}
-                  onCreate={handleNewConversation}
-                  onDelete={handleDeleteConversation}
-                  onRename={renameConversation}
-                  onReset={handleResetHistory}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="hidden h-full flex-col items-center gap-4 p-4 lg:flex">
               <button
                 type="button"
                 onClick={() => {
-                  setIsSidebarOpen(true)
+                  setIsSidebarOpen(false)
                 }}
-                className="rounded-lg p-2 text-text-secondary hover:bg-surface-hover hover:text-text-primary"
-                aria-label="Open sidebar"
-                title="Open sidebar"
+                className="rounded-lg p-1.5 text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+                aria-label="Close sidebar"
               >
-                <Menu className="h-5 w-5" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNewConversation}
-                className="rounded-lg p-2 text-text-secondary hover:bg-surface-hover hover:text-text-primary"
-                aria-label="New conversation"
-                title="New conversation"
-              >
-                <PenSquare className="h-5 w-5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsHistoryModalOpen(true)
-                }}
-                className="rounded-lg p-2 text-text-secondary hover:bg-surface-hover hover:text-text-primary"
-                aria-label="Search conversations"
-                title="Search conversations"
-              >
-                <Search className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
-          )}
-        </div>
+            <div className="flex-1 overflow-hidden">
+              <ConversationHistory
+                conversations={conversations}
+                activeConversationId={activeConversationId}
+                onSelect={handleSelectConversation}
+                onCreate={handleNewConversation}
+                onDelete={handleDeleteConversation}
+                onRename={renameConversation}
+                onReset={handleResetHistory}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-full flex-col items-center gap-4 p-4">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSidebarOpen(true)
+              }}
+              className="rounded-lg p-2 text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+              aria-label="Open sidebar"
+              title="Open sidebar"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={handleNewConversation}
+              className="rounded-lg p-2 text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+              aria-label="New conversation"
+              title="New conversation"
+            >
+              <PenSquare className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsHistoryModalOpen(true)
+              }}
+              className="rounded-lg p-2 text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+              aria-label="Search conversations"
+              title="Search conversations"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+          </div>
+        )}
       </aside>
 
       {/* History Modal */}
@@ -335,8 +297,17 @@ const ChatPage = () => {
               e.stopPropagation()
             }}
           >
-            <div className="flex items-center justify-between border-b border-border p-4">
-              <h2 className="text-lg font-semibold text-text-primary">Riwayat Percakapan</h2>
+            <div className="flex items-center gap-3 px-4 py-3">
+              <img
+                src="/favicon.png"
+                alt="Logo Universitas Gunadarma"
+                className="h-8 w-8 rounded-full"
+                loading="lazy"
+              />
+              <div className="flex-1">
+                <h2 className="text-sm font-semibold text-text-primary">Gunadarma AI</h2>
+                <p className="text-xs text-text-secondary">Smart AI Assistant</p>
+              </div>
               <button
                 type="button"
                 onClick={() => {
@@ -366,105 +337,117 @@ const ChatPage = () => {
       {/* Main Content */}
       <main className="flex flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out">
         {/* Top Bar */}
-        <header className="flex items-center gap-3 border-b border-border bg-card px-4 py-3">
+        <header className="flex items-center gap-3 bg-background px-4 py-3">
           <button
             type="button"
             onClick={() => {
-              setIsSidebarOpen(!isSidebarOpen)
+              setIsSidebarOpen(true)
             }}
             className="rounded-lg p-2 text-text-secondary hover:bg-surface-hover hover:text-text-primary lg:hidden"
-            aria-label="Toggle sidebar"
+            aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
           </button>
 
-          <div className="flex flex-1 items-center gap-3">
-            <img
-              src="/favicon.png"
-              alt="Logo Universitas Gunadarma"
-              className="h-8 w-8 rounded-full"
-              loading="lazy"
-            />
-            <div className="flex-1">
-              <h1 className="text-sm font-semibold text-text-primary">Gunadarma AI</h1>
-              <p className="text-xs text-text-secondary">Smart AI Assistant</p>
-            </div>
+          {!isSidebarOpen && (
+            <>
+              <img
+                src="/favicon.png"
+                alt="Logo Universitas Gunadarma"
+                className="hidden h-8 w-8 rounded-full lg:block"
+              />
+              <div className="hidden flex-1 lg:block">
+                <h1 className="text-sm font-semibold text-text-primary">Gunadarma AI</h1>
+                <p className="text-xs text-text-secondary">Smart AI Assistant</p>
+              </div>
+            </>
+          )}
+
+          <div
+            className={
+              isSidebarOpen ? 'ml-auto flex items-center gap-3' : 'ml-auto flex items-center gap-3'
+            }
+          >
+            <Button variant="ghost" size="sm" asChild className="hidden gap-2 sm:flex">
+              <a href="https://www.gunadarma.ac.id" target="_blank" rel="noreferrer">
+                <Info className="h-4 w-4" />
+                About
+              </a>
+            </Button>
+
+            <ThemeSwitcher />
           </div>
-
-          <Button variant="ghost" size="sm" asChild className="hidden gap-2 sm:flex">
-            <a href="https://www.gunadarma.ac.id" target="_blank" rel="noreferrer">
-              <Info className="h-4 w-4" />
-              About
-            </a>
-          </Button>
-
-          <ThemeSwitcher />
         </header>
 
         {/* Messages Area */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-3xl px-4 pt-6">
-            {messages.length === 0 && (
-              <div className="mb-8 text-center">
-                <ChatHeader />
-              </div>
-            )}
+          {messages.length === 0 ? (
+            /* Initial Empty State - Centered */
+            <div className="flex h-full flex-col items-center justify-center px-4">
+              <div className="-mt-16 w-full max-w-2xl">
+                {/* Logo and Title */}
+                <div className="mb-5 flex flex-col items-center gap-4 text-center">
+                  <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-text-primary">
+                      Halo, Selamat datang!
+                    </h1>
+                    <p className="mt-3 text-md text-text-secondary/80">
+                      Ada yang bisa saya bantu hari ini?
+                    </p>
+                  </div>
+                </div>
 
-            {error && (
-              <div className="mb-4 flex items-center justify-between gap-4 rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
-                <p className="flex-1">{error.message}</p>
-                <Button variant="ghost" size="sm" onClick={dismissError} className="text-error">
-                  Tutup
-                </Button>
-              </div>
-            )}
-
-            <div className="space-y-6">
-              {messages.map((message) => (
-                <ChatMessageItem key={message.id} message={message} />
-              ))}
-              {isTyping && <MessageTyping />}
-            </div>
-
-            {showSuggestions && (
-              <div className="mt-8 rounded-3xl border border-dashed border-border px-5 py-4 text-text-secondary">
-                <p className="text-sm font-semibold">Mulai percakapan dengan pertanyaan populer</p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  {suggestedQuestions.map((question) => (
-                    <Button
-                      key={question}
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      className="rounded-2xl"
-                      onClick={() => {
-                        handleSuggestionClick(question)
-                      }}
-                    >
-                      {question}
-                    </Button>
-                  ))}
+                {/* Input Area */}
+                <div>
+                  <ChatInput
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onSubmit={handleSubmit}
+                    disabled={isLoading}
+                    isSending={isLoading}
+                  />
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            /* Chat Messages View */
+            <div className="mx-auto max-w-3xl px-4 pt-6">
+              {error && (
+                <div className="mb-4 flex items-center justify-between gap-4 rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+                  <p className="flex-1">{error.message}</p>
+                  <Button variant="ghost" size="sm" onClick={dismissError} className="text-error">
+                    Tutup
+                  </Button>
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {messages.map((message) => (
+                  <ChatMessageItem key={message.id} message={message} />
+                ))}
+                {isTyping && <MessageTyping />}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Input Area - Fixed at Bottom */}
-        <div className="bg-background">
-          <div className="mx-auto max-w-3xl px-4 pb-3">
-            <ChatInput
-              value={inputValue}
-              onChange={handleInputChange}
-              onSubmit={handleSubmit}
-              disabled={isLoading}
-              isSending={isLoading}
-            />
-            <p className="mt-2 text-center text-xs text-text-muted">
-              Gunadarma AI dapat memberikan jawaban berdasarkan basis pengetahuan terbaru kampus.
-            </p>
+        {/* Input Area - Fixed at Bottom (only shown when there are messages) */}
+        {messages.length > 0 && (
+          <div className="bg-background">
+            <div className="mx-auto max-w-3xl px-4 pb-3">
+              <ChatInput
+                value={inputValue}
+                onChange={handleInputChange}
+                onSubmit={handleSubmit}
+                disabled={isLoading}
+                isSending={isLoading}
+              />
+              <p className="mt-2 text-center text-xs text-text-muted">
+                Gunadarma AI dapat membuat kesalahan, jadi periksa kembali responsnya.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </main>
     </div>
   )
