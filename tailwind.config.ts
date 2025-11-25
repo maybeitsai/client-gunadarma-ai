@@ -34,6 +34,7 @@ const config: Config = {
           hover: withOpacity('--gunadarma-primary-hover'),
           foreground: withOpacity('--text-on-primary'),
         },
+        'user-bubble': withOpacity('--user-bubble'),
         text: {
           primary: withOpacity('--text-primary'),
           secondary: withOpacity('--text-secondary'),

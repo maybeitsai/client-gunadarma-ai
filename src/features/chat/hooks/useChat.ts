@@ -145,12 +145,17 @@ const useChat = ({
         return false
       }
 
+      // Don't show sources if the response indicates no information is available
+      const hasNoInfo = response.answer.includes(
+        'Maaf, informasi mengenai hal tersebut tidak tersedia',
+      )
+
       const assistantMessage: ChatMessage = {
         id: generateId(),
         role: 'assistant',
         content: response.answer,
         createdAt: new Date().toISOString(),
-        sources: response.source_urls,
+        sources: hasNoInfo ? [] : response.source_urls,
       }
 
       console.log('[runRequest] Adding assistant message:', assistantMessage)

@@ -40,18 +40,18 @@ const ThemeSwitcher = () => {
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
-          className="bg-surface shadow-elevation-1 hover:bg-surface-hover focus-visible:ring-focus relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent transition-colors hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="relative inline-flex items-center justify-center rounded-lg p-2 text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <Sun
             className={cn(
-              'text-text-primary h-5 w-5 rotate-0 scale-100 transition-all',
+              'h-5 w-5 rotate-0 scale-100 text-text-primary transition-all',
               resolvedTheme === 'dark' && 'rotate-90 scale-0',
             )}
             aria-hidden="true"
           />
           <Moon
             className={cn(
-              'text-text-primary absolute h-5 w-5 rotate-90 scale-0 transition-all',
+              'absolute h-5 w-5 rotate-90 scale-0 text-text-primary transition-all',
               resolvedTheme === 'dark' && 'rotate-0 scale-100',
             )}
             aria-hidden="true"
@@ -64,9 +64,9 @@ const ThemeSwitcher = () => {
         <DropdownMenu.Content
           sideOffset={10}
           align="end"
-          className="bg-surface shadow-elevation-3 z-50 min-w-[260px] rounded-2xl border border-border p-2 backdrop-blur-sm focus:outline-none"
+          className="z-50 min-w-[260px] rounded-2xl border border-border bg-surface p-2 shadow-elevation-3 backdrop-blur-sm focus:outline-none"
         >
-          <DropdownMenu.Label className="text-text-muted px-3 py-2 text-xs font-semibold uppercase tracking-wide">
+          <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
             Theme
           </DropdownMenu.Label>
           <DropdownMenu.RadioGroup
@@ -79,12 +79,12 @@ const ThemeSwitcher = () => {
               <DropdownMenu.RadioItem
                 key={option.value}
                 value={option.value}
-                className="text-text-secondary focus-visible:bg-surface-hover data-[state=checked]:bg-surface-hover group flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm outline-none transition-colors"
+                className="group flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm text-text-secondary outline-none transition-colors focus-visible:bg-surface-hover data-[state=checked]:bg-surface-hover"
               >
-                <span className="text-text-primary mt-0.5">{option.icon}</span>
+                <span className="mt-0.5 text-text-primary">{option.icon}</span>
                 <span className="flex-1">
-                  <span className="text-text-primary block font-medium">{option.label}</span>
-                  <span className="text-text-muted text-xs">{option.description}</span>
+                  <span className="block font-medium text-text-primary">{option.label}</span>
+                  <span className="text-xs text-text-muted">{option.description}</span>
                 </span>
                 <DropdownMenu.ItemIndicator>
                   <Check className="h-4 w-4 text-primary" aria-hidden="true" />

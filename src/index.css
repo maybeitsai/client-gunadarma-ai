@@ -12,6 +12,7 @@
   --gunadarma-primary-dark: 74 46 107;
   --gunadarma-primary-light: 232 224 240;
   --gunadarma-primary-hover: 123 83 179;
+  --user-bubble: 104 67 154;
   --text-on-primary: 255 255 255;
   --text-on-accent: 255 255 255;
 
@@ -70,22 +71,26 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --background: 33 33 33;
-  --surface: 38 32 41;
-  --surface-hover: 47 38 53;
-  --card: 43 34 54;
-  --border: 60 47 74;
-  --input-bg: 46 46 46;
-  --button-disabled: 75 57 100;
-  --bubble-bg: 66 66 66;
-  --accent: 232 224 240;
-  --accent-hover: 188 166 219;
-  --focus-ring: 164 132 208;
-  --text-primary: 245 243 250;
-  --text-secondary: 210 205 224;
-  --text-muted: 160 145 182;
-  --surface-foreground: 245 243 250;
-  --foreground: 245 243 250;
+  --gunadarma-primary: 139 92 246;
+  --gunadarma-primary-dark: 109 40 217;
+  --gunadarma-primary-light: 196 181 253;
+  --gunadarma-primary-hover: 167 139 250;
+  --background: 15 23 42;
+  --surface: 30 41 59;
+  --surface-hover: 51 65 85;
+  --card: 30 41 59;
+  --border: 71 85 105;
+  --input-bg: 30 41 59;
+  --button-disabled: 100 116 139;
+  --bubble-bg: 51 65 85;
+  --accent: 139 92 246;
+  --accent-hover: 167 139 250;
+  --focus-ring: 196 181 253;
+  --text-primary: 248 250 252;
+  --text-secondary: 203 213 225;
+  --text-muted: 148 163 184;
+  --surface-foreground: 248 250 252;
+  --foreground: 248 250 252;
   --error: 248 113 113;
   --success: 74 222 128;
   --color-mode: dark;
@@ -94,19 +99,23 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
-    --background: 33 33 33;
-    --surface: 38 32 41;
-    --surface-hover: 47 38 53;
-    --card: 43 34 54;
-    --border: 60 47 74;
-    --input-bg: 46 46 46;
-    --button-disabled: 75 57 100;
-    --bubble-bg: 66 66 66;
-    --accent: 232 224 240;
-    --accent-hover: 188 166 219;
-    --focus-ring: 164 132 208;
-    --text-primary: 245 243 250;
-    --text-secondary: 210 205 224;
+    --gunadarma-primary: 139 92 246;
+    --gunadarma-primary-dark: 109 40 217;
+    --gunadarma-primary-light: 196 181 253;
+    --gunadarma-primary-hover: 167 139 250;
+    --background: 15 23 42;
+    --surface: 30 41 59;
+    --surface-hover: 51 65 85;
+    --card: 30 41 59;
+    --border: 71 85 105;
+    --input-bg: 30 41 59;
+    --button-disabled: 100 116 139;
+    --bubble-bg: 51 65 85;
+    --accent: 139 92 246;
+    --accent-hover: 167 139 250;
+    --focus-ring: 196 181 253;
+    --text-primary: 248 250 252;
+    --text-secondary: 203 213 225;
     --text-muted: 160 145 182;
     --surface-foreground: 245 243 250;
     --foreground: 245 243 250;
@@ -122,8 +131,14 @@
     transition-duration: var(--theme-transition-duration);
   }
 
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
   body {
-    min-height: 100vh;
     background-color: rgb(var(--background));
     color: rgb(var(--text-primary));
     font-family: theme('fontFamily.sans');
@@ -132,19 +147,19 @@
   }
 
   h1 {
-    @apply text-display-lg text-text-primary font-semibold tracking-tight;
+    @apply text-display-lg font-semibold tracking-tight text-text-primary;
   }
 
   h2 {
-    @apply text-display-sm text-text-primary font-semibold tracking-tight;
+    @apply text-display-sm font-semibold tracking-tight text-text-primary;
   }
 
   h3 {
-    @apply text-text-primary text-2xl font-semibold;
+    @apply text-2xl font-semibold text-text-primary;
   }
 
   p {
-    @apply text-text-secondary text-base;
+    @apply text-base text-text-secondary;
   }
 
   ::selection {
@@ -159,7 +174,7 @@
   }
 
   .surface-panel {
-    @apply bg-surface shadow-elevation-1 rounded-2xl border border-border p-6 transition-shadow;
+    @apply rounded-2xl border border-border bg-surface p-6 shadow-elevation-1 transition-shadow;
   }
 
   .surface-panel:hover {
@@ -183,7 +198,7 @@
 
 @layer components {
   .typing-dot {
-    @apply shadow-elevation-0 h-2 w-2 rounded-full bg-primary;
+    @apply h-2 w-2 rounded-full bg-primary shadow-elevation-0;
     animation: typing-pulse 1s infinite ease-in-out;
   }
 

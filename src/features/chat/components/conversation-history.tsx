@@ -1,6 +1,6 @@
 import { memo, useMemo, useState } from 'react'
 import { clsx } from 'clsx'
-import { Check, MessageSquare, PencilLine, Plus, Trash2 } from 'lucide-react'
+import { Check, MessageSquare, PencilLine, PenSquare, Search, Trash2 } from 'lucide-react'
 import type { Conversation } from '@/features/chat/types'
 import { Button } from '@/shared/ui/button'
 
@@ -26,6 +26,7 @@ const ConversationHistoryComponent = ({
   const [editingId, setEditingId] = useState<string | null>(null)
   const [draftTitle, setDraftTitle] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   const filteredConversations = useMemo(() => {
     const term = searchQuery.trim().toLowerCase()
@@ -48,16 +49,17 @@ const ConversationHistoryComponent = ({
     setDraftTitle('')
   }
 
+  const handleResetConfirm = () => {
+    onReset()
+    setShowResetConfirm(false)
+  }
+
   return (
-    <aside className="surface-panel flex h-full flex-col gap-4 p-5">
+    <div className="flex h-full flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-text-muted">History</p>
-          <h2 className="mt-1 text-lg font-semibold text-text-primary">Percakapan</h2>
-        </div>
         <Button variant="ghost" size="sm" onClick={onCreate} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Baru
+          <PenSquare className="h-4 w-4" />
+          Percakapan baru
         </Button>
       </div>
 
@@ -65,7 +67,8 @@ const ConversationHistoryComponent = ({
         <label className="sr-only" htmlFor="conversation-search">
           Cari riwayat percakapan
         </label>
-        <div className="mb-3 flex items-center gap-2 rounded-2xl border border-border bg-surface-hover/60 px-3 py-2 text-sm transition focus-within:border-primary/30">
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-sm transition focus-within:border-primary/30">
+          <Search className="h-4 w-4 text-text-muted" />
           <input
             id="conversation-search"
             type="search"
@@ -79,12 +82,12 @@ const ConversationHistoryComponent = ({
         </div>
       </div>
 
-      <div className="-mx-2 flex-1 space-y-1 overflow-y-auto pr-1">
+      <div className="flex-1 space-y-1 overflow-y-auto">
         {filteredConversations.length === 0 && (
-          <div className="text-sm text-text-muted">
+          <div className="px-2 text-sm text-text-muted">
             {conversations.length === 0
-              ? 'Riwayat kosong. Mulai percakapan baru untuk menyimpannya di sini.'
-              : 'Tidak ada percakapan yang cocok dengan pencarian.'}
+              ? 'Belum ada riwayat percakapan'
+              : 'Tidak ada hasil pencarian'}
           </div>
         )}
         {filteredConversations.map((conversation) => {
@@ -95,8 +98,8 @@ const ConversationHistoryComponent = ({
             <div
               key={conversation.id}
               className={clsx(
-                'group flex items-center gap-2 rounded-2xl border border-transparent px-2 py-2 transition',
-                isActive ? 'border-primary/20 bg-primary/10' : 'hover:bg-surface-hover/80',
+                'group flex items-center gap-2 rounded-lg px-3 py-2 transition',
+                isActive ? 'bg-primary/10 text-primary' : 'hover:bg-surface-hover',
               )}
             >
               <button
@@ -104,15 +107,13 @@ const ConversationHistoryComponent = ({
                 onClick={() => {
                   onSelect(conversation.id)
                 }}
-                className="flex flex-1 items-center gap-3 text-left"
+                className="flex min-w-0 flex-1 items-center gap-3 text-left"
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-surface text-text-secondary">
-                  <MessageSquare className="h-4 w-4" />
-                </span>
-                <div className="flex-1">
+                <MessageSquare className="h-4 w-4 shrink-0" />
+                <div className="min-w-0 flex-1">
                   {isEditing ? (
                     <input
-                      className="w-full rounded-xl border border-border bg-card px-3 py-1 text-sm text-text-primary focus:border-primary focus:outline-none"
+                      className="w-full rounded border border-border bg-card px-2 py-1 text-sm text-text-primary focus:border-primary focus:outline-none"
                       value={draftTitle}
                       onChange={(event) => {
                         setDraftTitle(event.target.value)
@@ -127,23 +128,25 @@ const ConversationHistoryComponent = ({
                       autoFocus
                     />
                   ) : (
-                    <p className="text-sm font-medium text-text-primary">{conversation.title}</p>
+                    <>
+                      <p className="truncate text-sm font-medium">{conversation.title}</p>
+                      <p className="text-xs text-text-muted">
+                        {new Date(conversation.updatedAt).toLocaleString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                        })}
+                      </p>
+                    </>
                   )}
-                  <p className="text-xs text-text-muted">
-                    {new Date(conversation.updatedAt).toLocaleString('id-ID', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
                 </div>
               </button>
 
-              <div className="flex items-center gap-2 opacity-0 transition group-hover:opacity-100">
+              <div className="flex shrink-0 items-center gap-1 opacity-0 transition group-hover:opacity-100">
                 {isEditing ? (
                   <button
                     type="button"
                     onClick={commitRename}
-                    className="text-success hover:text-success/80"
+                    className="rounded p-1 text-success hover:bg-success/10"
                     aria-label="Simpan nama"
                   >
                     <Check className="h-4 w-4" />
@@ -154,7 +157,7 @@ const ConversationHistoryComponent = ({
                     onClick={() => {
                       beginEditing(conversation.id, conversation.title)
                     }}
-                    className="text-text-muted hover:text-text-primary"
+                    className="rounded p-1 text-text-muted hover:bg-surface-hover hover:text-text-primary"
                     aria-label="Ubah nama percakapan"
                   >
                     <PencilLine className="h-4 w-4" />
@@ -165,7 +168,7 @@ const ConversationHistoryComponent = ({
                   onClick={() => {
                     onDelete(conversation.id)
                   }}
-                  className="text-error hover:text-error/80"
+                  className="rounded p-1 text-text-muted transition-colors hover:bg-error/10 hover:text-error"
                   aria-label="Hapus percakapan"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -176,15 +179,48 @@ const ConversationHistoryComponent = ({
         })}
       </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onReset}
-        className="justify-center text-text-muted"
-      >
-        Hapus semua riwayat
-      </Button>
-    </aside>
+      <div className="border-t border-border pt-4">
+        {showResetConfirm ? (
+          <div className="space-y-2">
+            <p className="text-center text-sm text-text-primary">
+              Yakin ingin menghapus semua riwayat?
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowResetConfirm(false)
+                }}
+                className="flex-1 justify-center text-text-secondary"
+              >
+                Batal
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleResetConfirm}
+                className="flex-1 justify-center text-error transition-colors hover:!bg-error/10 hover:!text-error"
+              >
+                Hapus
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setShowResetConfirm(true)
+            }}
+            className="w-full justify-center gap-2 text-text-muted transition-colors hover:!bg-error/10 hover:!text-error"
+          >
+            <Trash2 className="h-4 w-4" />
+            Hapus semua riwayat
+          </Button>
+        )}
+      </div>
+    </div>
   )
 }
 

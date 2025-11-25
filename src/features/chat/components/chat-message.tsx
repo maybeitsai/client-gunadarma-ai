@@ -24,7 +24,7 @@ const ChatMessageComponent = ({ message }: ChatMessageProps) => {
         className={clsx(
           'max-w-3xl rounded-3xl border border-transparent px-5 py-4 text-sm shadow-sm transition',
           isUser
-            ? 'rounded-br-md bg-primary text-primary-foreground'
+            ? 'bg-user-bubble rounded-br-md text-primary-foreground'
             : 'rounded-bl-md border-border bg-card text-text-primary',
         )}
       >
@@ -41,7 +41,7 @@ const ChatMessageComponent = ({ message }: ChatMessageProps) => {
               minute: '2-digit',
             })}
           </span>
-          <span>{isUser ? 'You' : 'Gunadarma AI'}</span>
+          {!isUser && <span>Gunadarma AI</span>}
         </div>
 
         {!isUser && message.sources && message.sources.length > 0 && (
