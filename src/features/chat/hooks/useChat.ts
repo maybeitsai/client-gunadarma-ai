@@ -41,6 +41,7 @@ const useChat = ({
   const sessionIdRef = useRef(0)
   const lastConversationIdRef = useRef<string | null>(conversationId ?? null)
   const isMountedRef = useRef(true)
+  const isConversationSwitchingRef = useRef(false)
 
   console.log(
     '[useChat] Render - isMounted:',
@@ -95,17 +96,43 @@ const useChat = ({
     lastConversationIdRef.current = normalizedConversationId
 
     if (shouldResetSession) {
-      console.log('[conversationEffect] Resetting session and messages')
+      console.log(
+        '[conversationEffect] Resetting session and messages to initialMessages:',
+        initialMessages,
+      )
       sessionIdRef.current += 1
       cancelPendingRequest()
-      setMessages(initialMessages)
+
+      // Set flag to prevent onMessagesChange from being called during switch
+      isConversationSwitchingRef.current = true
+      setMessages([...initialMessages])
       setError(null)
+
+      // Reset flag after a short delay to allow React to process the state update
+      setTimeout(() => {
+        isConversationSwitchingRef.current = false
+      }, 0)
     } else {
       console.log('[conversationEffect] Not resetting - first conversation or same conversation')
+      // Still update messages if this is the first load and initialMessages is provided
+      if (previousConversationId === null && initialMessages.length > 0) {
+        isConversationSwitchingRef.current = true
+        setMessages([...initialMessages])
+        setTimeout(() => {
+          isConversationSwitchingRef.current = false
+        }, 0)
+      }
     }
   }, [conversationId, cancelPendingRequest, initialMessages])
 
   useEffect(() => {
+    // Don't call onMessagesChange during conversation switching
+    if (isConversationSwitchingRef.current) {
+      console.log('[onMessagesChange effect] Skipping - conversation switching')
+      return
+    }
+
+    console.log('[onMessagesChange effect] Calling with messages:', messages.length)
     onMessagesChange?.(messages)
   }, [messages, onMessagesChange])
 

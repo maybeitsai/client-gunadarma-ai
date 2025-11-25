@@ -391,7 +391,7 @@ const ChatPage = () => {
                     <h1 className="text-3xl font-bold tracking-tight text-text-primary">
                       Halo, Selamat datang!
                     </h1>
-                    <p className="mt-3 text-md text-text-secondary/80">
+                    <p className="text-md mt-3 text-text-secondary/80">
                       Ada yang bisa saya bantu hari ini?
                     </p>
                   </div>
