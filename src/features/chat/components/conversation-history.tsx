@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { clsx } from 'clsx'
 import { Check, MessageSquare, PencilLine, Plus, Trash2 } from 'lucide-react'
 import type { Conversation } from '@/features/chat/types'
@@ -14,7 +14,7 @@ interface ConversationHistoryProps {
   onReset: () => void
 }
 
-const ConversationHistory = ({
+const ConversationHistoryComponent = ({
   conversations,
   activeConversationId,
   onSelect,
@@ -52,8 +52,8 @@ const ConversationHistory = ({
     <aside className="surface-panel flex h-full flex-col gap-4 p-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-text-muted text-xs uppercase tracking-[0.3em]">History</p>
-          <h2 className="text-text-primary mt-1 text-lg font-semibold">Percakapan</h2>
+          <p className="text-xs uppercase tracking-[0.3em] text-text-muted">History</p>
+          <h2 className="mt-1 text-lg font-semibold text-text-primary">Percakapan</h2>
         </div>
         <Button variant="ghost" size="sm" onClick={onCreate} className="gap-2">
           <Plus className="h-4 w-4" />
@@ -65,7 +65,7 @@ const ConversationHistory = ({
         <label className="sr-only" htmlFor="conversation-search">
           Cari riwayat percakapan
         </label>
-        <div className="bg-surface-hover/60 focus-within:border-primary/30 border-border mb-3 flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm transition">
+        <div className="mb-3 flex items-center gap-2 rounded-2xl border border-border bg-surface-hover/60 px-3 py-2 text-sm transition focus-within:border-primary/30">
           <input
             id="conversation-search"
             type="search"
@@ -74,14 +74,14 @@ const ConversationHistory = ({
               setSearchQuery(event.target.value)
             }}
             placeholder="Cari riwayat…"
-            className="bg-transparent flex-1 text-sm text-text-primary placeholder:text-text-muted focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-text-primary placeholder:text-text-muted focus:outline-none"
           />
         </div>
       </div>
 
       <div className="-mx-2 flex-1 space-y-1 overflow-y-auto pr-1">
         {filteredConversations.length === 0 && (
-          <div className="text-text-muted text-sm">
+          <div className="text-sm text-text-muted">
             {conversations.length === 0
               ? 'Riwayat kosong. Mulai percakapan baru untuk menyimpannya di sini.'
               : 'Tidak ada percakapan yang cocok dengan pencarian.'}
@@ -106,13 +106,13 @@ const ConversationHistory = ({
                 }}
                 className="flex flex-1 items-center gap-3 text-left"
               >
-                <span className="bg-surface text-text-secondary flex h-9 w-9 items-center justify-center rounded-2xl">
+                <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-surface text-text-secondary">
                   <MessageSquare className="h-4 w-4" />
                 </span>
                 <div className="flex-1">
                   {isEditing ? (
                     <input
-                      className="text-text-primary w-full rounded-xl border border-border bg-card px-3 py-1 text-sm focus:border-primary focus:outline-none"
+                      className="w-full rounded-xl border border-border bg-card px-3 py-1 text-sm text-text-primary focus:border-primary focus:outline-none"
                       value={draftTitle}
                       onChange={(event) => {
                         setDraftTitle(event.target.value)
@@ -127,9 +127,9 @@ const ConversationHistory = ({
                       autoFocus
                     />
                   ) : (
-                    <p className="text-text-primary text-sm font-medium">{conversation.title}</p>
+                    <p className="text-sm font-medium text-text-primary">{conversation.title}</p>
                   )}
-                  <p className="text-text-muted text-xs">
+                  <p className="text-xs text-text-muted">
                     {new Date(conversation.updatedAt).toLocaleString('id-ID', {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -180,12 +180,24 @@ const ConversationHistory = ({
         variant="ghost"
         size="sm"
         onClick={onReset}
-        className="text-text-muted justify-center"
+        className="justify-center text-text-muted"
       >
         Hapus semua riwayat
       </Button>
     </aside>
   )
 }
+
+const ConversationHistory = memo(
+  ConversationHistoryComponent,
+  (prev, next) =>
+    prev.activeConversationId === next.activeConversationId &&
+    prev.conversations === next.conversations &&
+    prev.onCreate === next.onCreate &&
+    prev.onDelete === next.onDelete &&
+    prev.onRename === next.onRename &&
+    prev.onReset === next.onReset &&
+    prev.onSelect === next.onSelect,
+)
 
 export { ConversationHistory }

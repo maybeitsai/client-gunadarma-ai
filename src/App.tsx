@@ -11,7 +11,7 @@ const App = () => (
           <p className="text-text-muted text-xs uppercase tracking-[0.3em]">Gunadarma University</p>
           <h1 className="text-display-sm text-text-primary">AI Guidance Center</h1>
           <p className="text-text-secondary mt-1 text-sm">
-            Asisten percakapan dengan sentuhan desain premium ala ChatGPT.
+            Smart AI assistant dengan respons akurat dan tepercaya seputar informasi Universitas Gunadarma.
           </p>
         </div>
         <div className="flex items-center gap-3">

@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { clsx } from 'clsx'
 import { ExternalLink, Sparkles, User } from 'lucide-react'
 import type { ChatMessage as ChatMessageType } from '@/features/chat/types'
@@ -7,7 +8,7 @@ interface ChatMessageProps {
   message: ChatMessageType
 }
 
-const ChatMessage = ({ message }: ChatMessageProps) => {
+const ChatMessageComponent = ({ message }: ChatMessageProps) => {
   const isUser = message.role === 'user'
 
   return (
@@ -24,7 +25,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
           'max-w-3xl rounded-3xl border border-transparent px-5 py-4 text-sm shadow-sm transition',
           isUser
             ? 'rounded-br-md bg-primary text-primary-foreground'
-            : 'text-text-primary rounded-bl-md border-border bg-card',
+            : 'rounded-bl-md border-border bg-card text-text-primary',
         )}
       >
         {isUser ? (
@@ -33,7 +34,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
           <MarkdownRenderer content={message.content} />
         )}
 
-        <div className="text-text-muted mt-3 flex items-center justify-between text-[0.75rem]">
+        <div className="mt-3 flex items-center justify-between text-[0.75rem] text-text-muted">
           <span>
             {new Date(message.createdAt).toLocaleTimeString([], {
               hour: '2-digit',
@@ -45,7 +46,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
 
         {!isUser && message.sources && message.sources.length > 0 && (
           <div className="mt-4 border-t border-border pt-3">
-            <p className="text-text-secondary text-xs font-semibold uppercase tracking-[0.2em]">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
               Sources:
             </p>
             <ul className="mt-2 space-y-1">
@@ -55,7 +56,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
                     href={source}
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:text-primary-hover inline-flex items-center gap-1 text-sm text-primary"
+                    className="inline-flex items-center gap-1 text-sm text-primary hover:text-primary-hover"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
                     {source}
@@ -68,7 +69,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       </div>
 
       {isUser && (
-        <span className="bg-surface text-text-primary flex h-10 w-10 items-center justify-center rounded-2xl text-base">
+        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface text-base text-text-primary">
           <User className="h-5 w-5" />
           <span className="sr-only">You</span>
         </span>
@@ -76,5 +77,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
     </div>
   )
 }
+
+const ChatMessage = memo(ChatMessageComponent, (prev, next) => prev.message === next.message)
 
 export { ChatMessage }

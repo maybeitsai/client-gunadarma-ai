@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { askQuestion, ChatApiError } from '@/features/chat/services/chatApi'
 import type { ApiErrorDetail, AskRequest, ChatMessage } from '@/features/chat/types'
 
@@ -18,49 +18,132 @@ interface SendMessageOptions {
 interface UseChatOptions {
   initialMessages?: ChatMessage[]
   onMessagesChange?: (messages: ChatMessage[]) => void
+  conversationId?: string | null
 }
 
-const useChat = ({ initialMessages = [], onMessagesChange }: UseChatOptions = {}) => {
+interface QueuedRequest {
+  id: string
+  prompt: string
+  options?: SendMessageOptions
+}
+
+const useChat = ({
+  initialMessages = [],
+  onMessagesChange,
+  conversationId = null,
+}: UseChatOptions = {}) => {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages)
   const [isLoading, setIsLoading] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const [error, setError] = useState<ApiErrorDetail | null>(null)
+  const requestQueueRef = useRef<QueuedRequest[]>([])
+  const activeRequestRef = useRef<{ controller: AbortController; sessionId: number } | null>(null)
+  const sessionIdRef = useRef(0)
+  const lastConversationIdRef = useRef<string | null>(conversationId ?? null)
+  const isMountedRef = useRef(true)
+
+  console.log(
+    '[useChat] Render - isMounted:',
+    isMountedRef.current,
+    'conversationId:',
+    conversationId,
+  )
+
+  const cancelPendingRequest = useCallback(() => {
+    if (activeRequestRef.current) {
+      activeRequestRef.current.controller.abort()
+      activeRequestRef.current = null
+    }
+    requestQueueRef.current = []
+    if (isMountedRef.current) {
+      setIsLoading(false)
+      setIsTyping(false)
+    }
+  }, [])
 
   useEffect(() => {
-    setMessages(initialMessages)
-    setError(null)
-  }, [initialMessages])
+    console.log('[useChat] MOUNTING - setting isMounted to true')
+    isMountedRef.current = true
+    return () => {
+      console.log('[useChat] UNMOUNTING - setting isMounted to false')
+      isMountedRef.current = false
+      if (activeRequestRef.current) {
+        activeRequestRef.current.controller.abort()
+      }
+      requestQueueRef.current = []
+    }
+  }, [])
+
+  useEffect(() => {
+    const normalizedConversationId = conversationId ?? null
+    const previousConversationId = lastConversationIdRef.current
+
+    console.log('[conversationEffect] conversationId changed:', {
+      previous: previousConversationId,
+      current: normalizedConversationId,
+    })
+
+    if (previousConversationId === normalizedConversationId) {
+      return
+    }
+
+    const shouldResetSession =
+      previousConversationId !== null && previousConversationId !== normalizedConversationId
+
+    console.log('[conversationEffect] shouldResetSession:', shouldResetSession)
+
+    lastConversationIdRef.current = normalizedConversationId
+
+    if (shouldResetSession) {
+      console.log('[conversationEffect] Resetting session and messages')
+      sessionIdRef.current += 1
+      cancelPendingRequest()
+      setMessages(initialMessages)
+      setError(null)
+    } else {
+      console.log('[conversationEffect] Not resetting - first conversation or same conversation')
+    }
+  }, [conversationId, cancelPendingRequest, initialMessages])
 
   useEffect(() => {
     onMessagesChange?.(messages)
   }, [messages, onMessagesChange])
 
-  const sendMessage = useCallback(async (content: string, options?: SendMessageOptions) => {
-    const trimmed = content.trim()
-    if (!trimmed) {
-      return
+  const runRequest = useCallback(async (queuedRequest: QueuedRequest) => {
+    const controller = new AbortController()
+    const sessionIdAtStart = sessionIdRef.current
+    activeRequestRef.current = { controller, sessionId: sessionIdAtStart }
+
+    if (isMountedRef.current) {
+      setIsLoading(true)
+      setIsTyping(true)
+      setError(null)
     }
 
-    const userMessage: ChatMessage = {
-      id: generateId(),
-      role: 'user',
-      content: trimmed,
-      createdAt: new Date().toISOString(),
+    const requestPayload: AskRequest = {
+      question: queuedRequest.prompt,
+      use_cache: queuedRequest.options?.use_cache,
+      use_hybrid: queuedRequest.options?.use_hybrid,
     }
-
-    setMessages((prev) => [...prev, userMessage])
-    setIsLoading(true)
-    setIsTyping(true)
-    setError(null)
 
     try {
-      const requestPayload: AskRequest = {
-        question: trimmed,
-        use_cache: options?.use_cache ?? true,
-        use_hybrid: options?.use_hybrid ?? false,
+      const response = await askQuestion(requestPayload, controller.signal)
+
+      console.log('[runRequest] Response received:', {
+        isMounted: isMountedRef.current,
+        aborted: controller.signal.aborted,
+        sessionMatch: sessionIdAtStart === sessionIdRef.current,
+      })
+
+      if (!isMountedRef.current || controller.signal.aborted) {
+        console.log('[runRequest] Skipping - unmounted or aborted')
+        return false
       }
 
-      const response = await askQuestion(requestPayload)
+      if (sessionIdAtStart !== sessionIdRef.current) {
+        console.log('[runRequest] Skipping - session changed')
+        return false
+      }
 
       const assistantMessage: ChatMessage = {
         id: generateId(),
@@ -70,8 +153,19 @@ const useChat = ({ initialMessages = [], onMessagesChange }: UseChatOptions = {}
         sources: response.source_urls,
       }
 
-      setMessages((prev) => [...prev, assistantMessage])
+      console.log('[runRequest] Adding assistant message:', assistantMessage)
+      setMessages((prev) => {
+        console.log('[runRequest] Previous messages:', prev.length)
+        const next = [...prev, assistantMessage]
+        console.log('[runRequest] Next messages:', next.length)
+        return next
+      })
+      return true
     } catch (err) {
+      if (controller.signal.aborted || !isMountedRef.current) {
+        return false
+      }
+
       if (err instanceof ChatApiError) {
         setError(err.detail)
       } else {
@@ -81,16 +175,88 @@ const useChat = ({ initialMessages = [], onMessagesChange }: UseChatOptions = {}
           cause: err,
         })
       }
+      return true
     } finally {
-      setIsLoading(false)
-      setIsTyping(false)
+      if (isMountedRef.current) {
+        activeRequestRef.current = null
+        const hasQueuedRequests = requestQueueRef.current.length > 0
+        if (!hasQueuedRequests) {
+          setIsLoading(false)
+          setIsTyping(false)
+        }
+      }
     }
   }, [])
 
+  const processQueue = useCallback(() => {
+    console.log(
+      '[processQueue] Called - activeRequest:',
+      !!activeRequestRef.current,
+      'queueLength:',
+      requestQueueRef.current.length,
+    )
+
+    if (activeRequestRef.current || requestQueueRef.current.length === 0) {
+      return
+    }
+
+    const nextRequest = requestQueueRef.current.shift()
+    if (!nextRequest) {
+      return
+    }
+
+    console.log('[processQueue] Processing request:', nextRequest.prompt)
+    void runRequest(nextRequest).then((shouldContinue) => {
+      console.log('[processQueue] Request completed, shouldContinue:', shouldContinue)
+      if (shouldContinue) {
+        setTimeout(() => {
+          processQueue()
+        }, 0)
+      }
+    })
+  }, [runRequest])
+
+  const sendMessage = useCallback(
+    (content: string, options?: SendMessageOptions) => {
+      const trimmed = content.trim()
+      if (!trimmed) {
+        return
+      }
+
+      const userMessage: ChatMessage = {
+        id: generateId(),
+        role: 'user',
+        content: trimmed,
+        createdAt: new Date().toISOString(),
+      }
+
+      console.log('[sendMessage] Adding user message:', userMessage)
+      setMessages((prev) => {
+        console.log('[sendMessage] Previous messages:', prev.length)
+        const next = [...prev, userMessage]
+        console.log('[sendMessage] Next messages:', next.length)
+        return next
+      })
+      setError(null)
+
+      requestQueueRef.current.push({
+        id: userMessage.id,
+        prompt: trimmed,
+        options,
+      })
+
+      console.log('[sendMessage] Queue length:', requestQueueRef.current.length)
+      processQueue()
+    },
+    [processQueue],
+  )
+
   const resetConversation = useCallback(() => {
+    sessionIdRef.current += 1
+    cancelPendingRequest()
     setMessages([])
     setError(null)
-  }, [])
+  }, [cancelPendingRequest])
 
   const dismissError = useCallback(() => {
     setError(null)
@@ -113,6 +279,7 @@ const useChat = ({ initialMessages = [], onMessagesChange }: UseChatOptions = {}
     resetConversation,
     stateSummary,
     dismissError,
+    cancelPendingRequest,
   }
 }
 

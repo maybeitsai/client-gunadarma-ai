@@ -4,7 +4,7 @@ import remarkGfm from 'remark-gfm'
 
 const mdComponents: Components = {
   p: ({ children }) => (
-    <p className="text-text-primary text-sm leading-relaxed [&:not(:last-child)]:mb-4">
+    <p className="text-sm leading-relaxed text-text-primary [&:not(:last-child)]:mb-4">
       {children}
     </p>
   ),
@@ -13,18 +13,18 @@ const mdComponents: Components = {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="hover:text-primary-hover font-semibold text-primary underline-offset-4 hover:underline"
+      className="font-semibold text-primary underline-offset-4 hover:text-primary-hover hover:underline"
     >
       {children}
     </a>
   ),
-  strong: ({ children }) => <strong className="text-text-primary font-semibold">{children}</strong>,
+  strong: ({ children }) => <strong className="font-semibold text-text-primary">{children}</strong>,
   em: ({ children }) => <em className="text-text-secondary">{children}</em>,
   ul: ({ children }) => (
-    <ul className="text-text-primary list-disc space-y-2 pl-6 text-sm">{children}</ul>
+    <ul className="list-disc space-y-2 pl-6 text-sm text-text-primary">{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className="text-text-primary list-decimal space-y-2 pl-6 text-sm">{children}</ol>
+    <ol className="list-decimal space-y-2 pl-6 text-sm text-text-primary">{children}</ol>
   ),
   li: ({ children }) => <li className="leading-relaxed">{children}</li>,
   code: (props) => {
@@ -32,21 +32,25 @@ const mdComponents: Components = {
     const { children } = props
 
     if (isInline) {
-      return <code className="rounded-md bg-surface px-1.5 py-px text-xs text-primary">{children}</code>
+      return (
+        <code className="rounded-md bg-surface px-1.5 py-px text-xs text-primary">{children}</code>
+      )
     }
 
-    return <code className="block rounded-xl bg-surface p-4 text-xs text-text-primary">{children}</code>
+    return (
+      <code className="block rounded-xl bg-surface p-4 text-xs text-text-primary">{children}</code>
+    )
   },
   pre: ({ children, ...props }) => (
     <pre
       {...(props as ComponentPropsWithoutRef<'pre'>)}
-      className="bg-surface text-text-primary rounded-xl p-4 text-xs"
+      className="rounded-xl bg-surface p-4 text-xs text-text-primary"
     >
       {children}
     </pre>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="text-text-secondary border-l-4 border-primary/40 pl-4 italic">
+    <blockquote className="border-l-4 border-primary/40 pl-4 italic text-text-secondary">
       {children}
     </blockquote>
   ),

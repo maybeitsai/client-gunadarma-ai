@@ -57,7 +57,7 @@ const friendlyHttpMessage = (status: number): string => {
   return 'We could not complete that request. Please retry.'
 }
 
-const askQuestion = async (payload: AskRequest): Promise<AskResponse> => {
+const askQuestion = async (payload: AskRequest, signal?: AbortSignal): Promise<AskResponse> => {
   try {
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
@@ -69,6 +69,7 @@ const askQuestion = async (payload: AskRequest): Promise<AskResponse> => {
         use_hybrid: false,
         ...payload,
       }),
+      signal,
     })
 
     if (!response.ok) {
