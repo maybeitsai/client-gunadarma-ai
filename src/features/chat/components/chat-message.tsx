@@ -12,10 +12,15 @@ const ChatMessageComponent = ({ message }: ChatMessageProps) => {
   const isUser = message.role === 'user'
 
   return (
-    <div className={clsx('flex w-full gap-3', isUser ? 'justify-end' : 'justify-start')}>
+    <div
+      className={clsx(
+        'flex w-full gap-3 duration-300 animate-in fade-in slide-in-from-bottom-4',
+        isUser ? 'justify-end' : 'justify-start',
+      )}
+    >
       {!isUser && (
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-base text-primary">
-          <Bot className="h-5 w-5" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <Bot className="h-5 w-5 shrink-0" />
           <span className="sr-only">Assistant</span>
         </span>
       )}
@@ -34,14 +39,15 @@ const ChatMessageComponent = ({ message }: ChatMessageProps) => {
           <MarkdownRenderer content={message.content} />
         )}
 
-        <div className="mt-3 flex items-center justify-between text-[0.75rem] text-text-muted">
-          <span>
+        <div className="mt-3 flex items-center justify-between gap-2 text-[0.7rem] text-text-muted">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-1 w-1 rounded-full bg-text-muted/50"></span>
             {new Date(message.createdAt).toLocaleTimeString([], {
               hour: '2-digit',
               minute: '2-digit',
             })}
           </span>
-          {!isUser && <span>Gunadarma AI</span>}
+          {!isUser && <span className="font-medium">Gunadarma AI</span>}
         </div>
 
         {!isUser && message.sources && message.sources.length > 0 && (
@@ -69,8 +75,8 @@ const ChatMessageComponent = ({ message }: ChatMessageProps) => {
       </div>
 
       {isUser && (
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface text-base text-text-primary">
-          <User className="h-5 w-5" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-surface text-text-primary">
+          <User className="h-5 w-5 shrink-0" />
           <span className="sr-only">You</span>
         </span>
       )}

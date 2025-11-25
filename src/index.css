@@ -219,6 +219,24 @@
   }
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-bottom {
+  from {
+    transform: translateY(1rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @layer components {
   .typing-dot {
     @apply h-2 w-2 rounded-full bg-primary shadow-elevation-0;
@@ -231,5 +249,21 @@
 
   .typing-delay-300 {
     animation-delay: 300ms;
+  }
+
+  .animate-in {
+    animation-fill-mode: both;
+  }
+
+  .fade-in {
+    animation-name: fade-in;
+  }
+
+  .slide-in-from-bottom-4 {
+    animation-name: slide-in-from-bottom;
+  }
+
+  .duration-300 {
+    animation-duration: 300ms;
   }
 }
