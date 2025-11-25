@@ -59,7 +59,11 @@ const deriveConversationTitle = (messages: ChatMessage[]): string | null => {
   }
 
   const snippet = trimmed.slice(0, 32).trimEnd()
-  return snippet.length > 0 ? snippet : null
+  if (snippet.length === 0) {
+    return null
+  }
+
+  return trimmed.length > 32 ? `${snippet}...` : snippet
 }
 
 const useConversations = () => {
