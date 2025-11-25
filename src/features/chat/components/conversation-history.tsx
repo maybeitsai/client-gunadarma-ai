@@ -55,9 +55,14 @@ const ConversationHistoryComponent = ({
   }
 
   return (
-    <div className="flex h-full flex-col gap-4 p-4">
+    <div className="flex h-full flex-col gap-3 p-3">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={onCreate} className="gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onCreate}
+          className="w-full justify-center gap-2 bg-primary/10 text-primary hover:bg-primary/20"
+        >
           <PenSquare className="h-4 w-4" />
           Percakapan baru
         </Button>
@@ -67,7 +72,7 @@ const ConversationHistoryComponent = ({
         <label className="sr-only" htmlFor="conversation-search">
           Cari riwayat percakapan
         </label>
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-sm transition focus-within:border-primary/30">
+        <div className="bg-input-bg flex items-center gap-2 rounded-lg border border-border px-3 py-2.5 text-sm transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
           <Search className="h-4 w-4 text-text-muted" />
           <input
             id="conversation-search"
@@ -82,9 +87,9 @@ const ConversationHistoryComponent = ({
         </div>
       </div>
 
-      <div className="flex-1 space-y-1 overflow-y-auto">
+      <div className="scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent hover:scrollbar-thumb-surface-hover flex-1 space-y-1 overflow-y-auto pr-1">
         {filteredConversations.length === 0 && (
-          <div className="px-2 text-sm text-text-muted">
+          <div className="px-3 py-4 text-center text-sm text-text-muted">
             {conversations.length === 0
               ? 'Belum ada riwayat percakapan'
               : 'Tidak ada hasil pencarian'}
@@ -98,8 +103,10 @@ const ConversationHistoryComponent = ({
             <div
               key={conversation.id}
               className={clsx(
-                'group flex items-center gap-2 rounded-lg px-3 py-2 transition',
-                isActive ? 'bg-primary/10 text-primary' : 'hover:bg-surface-hover',
+                'group flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 transition-all duration-200',
+                isActive
+                  ? 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20'
+                  : 'hover:bg-surface-hover hover:shadow-sm',
               )}
             >
               <button
@@ -113,7 +120,7 @@ const ConversationHistoryComponent = ({
                 <div className="min-w-0 flex-1">
                   {isEditing ? (
                     <input
-                      className="w-full rounded border border-border bg-card px-2 py-1 text-sm text-text-primary focus:border-primary focus:outline-none"
+                      className="w-full rounded-md border border-border bg-card px-2 py-1 text-sm text-text-primary transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                       value={draftTitle}
                       onChange={(event) => {
                         setDraftTitle(event.target.value)
@@ -123,6 +130,10 @@ const ConversationHistoryComponent = ({
                         if (event.key === 'Enter') {
                           event.preventDefault()
                           commitRename()
+                        }
+                        if (event.key === 'Escape') {
+                          setEditingId(null)
+                          setDraftTitle('')
                         }
                       }}
                       autoFocus
@@ -141,12 +152,12 @@ const ConversationHistoryComponent = ({
                 </div>
               </button>
 
-              <div className="flex shrink-0 items-center gap-1 opacity-0 transition group-hover:opacity-100">
+              <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 {isEditing ? (
                   <button
                     type="button"
                     onClick={commitRename}
-                    className="rounded p-1 text-success hover:bg-success/10"
+                    className="rounded-md p-1.5 text-success transition-colors hover:bg-success/10"
                     aria-label="Simpan nama"
                   >
                     <Check className="h-4 w-4" />
@@ -157,7 +168,7 @@ const ConversationHistoryComponent = ({
                     onClick={() => {
                       beginEditing(conversation.id, conversation.title)
                     }}
-                    className="rounded p-1 text-text-muted hover:bg-surface-hover hover:text-text-primary"
+                    className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
                     aria-label="Ubah nama percakapan"
                   >
                     <PencilLine className="h-4 w-4" />
@@ -168,7 +179,7 @@ const ConversationHistoryComponent = ({
                   onClick={() => {
                     onDelete(conversation.id)
                   }}
-                  className="rounded p-1 text-text-muted transition-colors hover:bg-error/10 hover:text-error"
+                  className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-error/10 hover:text-error"
                   aria-label="Hapus percakapan"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -179,10 +190,10 @@ const ConversationHistoryComponent = ({
         })}
       </div>
 
-      <div className="border-t border-border pt-4">
+      <div className="border-t border-border pt-3">
         {showResetConfirm ? (
-          <div className="space-y-2">
-            <p className="text-center text-sm text-text-primary">
+          <div className="space-y-3">
+            <p className="text-center text-sm font-medium text-text-primary">
               Yakin ingin menghapus semua riwayat?
             </p>
             <div className="flex gap-2">

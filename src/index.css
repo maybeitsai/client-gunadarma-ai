@@ -71,56 +71,56 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --gunadarma-primary: 139 92 246;
-  --gunadarma-primary-dark: 109 40 217;
+  --gunadarma-primary: 147 112 219;
+  --gunadarma-primary-dark: 123 83 179;
   --gunadarma-primary-light: 196 181 253;
   --gunadarma-primary-hover: 167 139 250;
-  --background: 15 23 42;
-  --surface: 30 41 59;
-  --surface-hover: 51 65 85;
-  --card: 30 41 59;
-  --border: 71 85 105;
-  --input-bg: 30 41 59;
-  --button-disabled: 100 116 139;
-  --bubble-bg: 51 65 85;
-  --accent: 139 92 246;
+  --background: 17 24 39;
+  --surface: 31 41 55;
+  --surface-hover: 55 65 81;
+  --card: 31 41 55;
+  --border: 75 85 99;
+  --input-bg: 31 41 55;
+  --button-disabled: 107 114 128;
+  --bubble-bg: 55 65 81;
+  --accent: 147 112 219;
   --accent-hover: 167 139 250;
   --focus-ring: 196 181 253;
-  --text-primary: 248 250 252;
-  --text-secondary: 203 213 225;
-  --text-muted: 148 163 184;
-  --surface-foreground: 248 250 252;
-  --foreground: 248 250 252;
-  --error: 248 113 113;
-  --success: 74 222 128;
+  --text-primary: 243 244 246;
+  --text-secondary: 209 213 219;
+  --text-muted: 156 163 175;
+  --surface-foreground: 243 244 246;
+  --foreground: 243 244 246;
+  --error: 239 68 68;
+  --success: 52 211 153;
   --color-mode: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
-    --gunadarma-primary: 139 92 246;
-    --gunadarma-primary-dark: 109 40 217;
+    --gunadarma-primary: 147 112 219;
+    --gunadarma-primary-dark: 123 83 179;
     --gunadarma-primary-light: 196 181 253;
     --gunadarma-primary-hover: 167 139 250;
-    --background: 15 23 42;
-    --surface: 30 41 59;
-    --surface-hover: 51 65 85;
-    --card: 30 41 59;
-    --border: 71 85 105;
-    --input-bg: 30 41 59;
-    --button-disabled: 100 116 139;
-    --bubble-bg: 51 65 85;
-    --accent: 139 92 246;
+    --background: 17 24 39;
+    --surface: 31 41 55;
+    --surface-hover: 55 65 81;
+    --card: 31 41 55;
+    --border: 75 85 99;
+    --input-bg: 31 41 55;
+    --button-disabled: 107 114 128;
+    --bubble-bg: 55 65 81;
+    --accent: 147 112 219;
     --accent-hover: 167 139 250;
     --focus-ring: 196 181 253;
-    --text-primary: 248 250 252;
-    --text-secondary: 203 213 225;
-    --text-muted: 160 145 182;
-    --surface-foreground: 245 243 250;
-    --foreground: 245 243 250;
-    --error: 248 113 113;
-    --success: 74 222 128;
+    --text-primary: 243 244 246;
+    --text-secondary: 209 213 219;
+    --text-muted: 156 163 175;
+    --surface-foreground: 243 244 246;
+    --foreground: 243 244 246;
+    --error: 239 68 68;
+    --success: 52 211 153;
     --color-mode: dark;
   }
 }
@@ -179,6 +179,29 @@
 
   .surface-panel:hover {
     box-shadow: var(--elevation-2);
+  }
+
+  /* Custom scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--border)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--border));
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin:hover::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--surface-hover));
   }
 }
 

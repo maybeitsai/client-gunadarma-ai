@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { clsx } from 'clsx'
-import { ExternalLink, Sparkles, User } from 'lucide-react'
+import { ExternalLink, Bot, User } from 'lucide-react'
 import type { ChatMessage as ChatMessageType } from '@/features/chat/types'
 import { MarkdownRenderer } from '@/features/chat/components/markdown-renderer'
 
@@ -15,7 +15,7 @@ const ChatMessageComponent = ({ message }: ChatMessageProps) => {
     <div className={clsx('flex w-full gap-3', isUser ? 'justify-end' : 'justify-start')}>
       {!isUser && (
         <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-base text-primary">
-          <Sparkles className="h-5 w-5" />
+          <Bot className="h-5 w-5" />
           <span className="sr-only">Assistant</span>
         </span>
       )}
@@ -56,10 +56,10 @@ const ChatMessageComponent = ({ message }: ChatMessageProps) => {
                     href={source}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-primary hover:text-primary-hover"
+                    className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary-hover"
                   >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    {source}
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                    <span className="break-all">{source}</span>
                   </a>
                 </li>
               ))}
